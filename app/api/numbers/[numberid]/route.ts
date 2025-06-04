@@ -4,22 +4,8 @@ import { NumberStore } from "@/lib/number-store"
 // Initialize the number store with a window size of 10
 const numberStore = new NumberStore(10)
 
-// Your credentials
-const clientID = "ac3cbc65-9fad-410b-bced-e2869163ebc8"
-const clientSecret = "YOUR_CLIENT_SECRET" // <-- Replace with your actual clientSecret
-
-async function getAccessToken() {
-  const response = await fetch("http://20.244.56.144/evaluation-service/auth", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ clientID, clientSecret })
-  })
-  if (!response.ok) {
-    throw new Error("Failed to obtain access token")
-  }
-  const data = await response.json()
-  return data.access_token || data.token || data.accessToken // Adjust according to actual field name
-}
+// Use your provided access token directly
+const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNYXBDbGFpbXMiOnsiZXhwIjoxNzQ5MDE4MTA2LCJpYXQiOjE3NDkwMTc4MDYsImlzcyI6IkFmZm9yZG1lZCIsImp0aSI6ImFjM2NiYzY1LTlmYWQtNDEwYi1iY2VkLWUyODY5MTYzZWJjOCIsInN1YiI6ImFyeWFuc3VuaWxtb29uQGdtYWlsLmNvbSJ9LCJlbWFpbCI6ImFyeWFuc3VuaWxtb29uQGdtYWlsLmNvbSIsIm5hbWUiOiJhcnlhbiBtb29uIiwicm9sbE5vIjoiNzIzMDk2MDhjIiwiYWNjZXNzQ29kZSI6IktSalVVVSIsImNsaWVudElEIjoiYWMzY2JjNjUtOWZhZC00MTBiLWJjZWQtZTI4NjkxNjNlYmM4IiwiY2xpZW50U2VjcmV0IjoiRkF3RVdQald0QlduUWFxdyJ9.cy_f4AlemwfmEf8qWGGnuH2Vkz219Pt2s4rWTdWwf4o";
 
 export async function GET(request: NextRequest, context: { params: { numberid: string } }) {
   const numberid = context.params.numberid
@@ -35,14 +21,6 @@ export async function GET(request: NextRequest, context: { params: { numberid: s
 
     // Fetch numbers from the third-party API based on the number ID
     const apiUrl = getApiUrlForNumberType(numberid)
-
-    // Get access token
-    let accessToken = ""
-    try {
-      accessToken = await getAccessToken()
-    } catch (err) {
-      return NextResponse.json({ error: "Failed to authenticate with external API." }, { status: 401 })
-    }
 
     // Fetch with timeout
     const controller = new AbortController()
